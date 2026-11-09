@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Job details')}"></head>
+<body data-require="STUDENT" th:attr="data-job-id=${jobId}">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<main class="container py-4">
+    <a href="/jobs" class="text-decoration-none">&larr; Back to jobs</a>
+    <div id="alertBox" class="mt-3"></div>
+    <div class="row" id="loading"><div class="col-12 text-center py-5"><div class="spinner-border text-primary" role="status"></div></div></div>
+    <div id="content" class="d-none">
+        <div class="row g-4 mt-1">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0"><div class="card-body p-4">
+                    <span class="badge text-bg-light border mb-2" id="jobType"></span>
+                    <h2 class="fw-bold mb-1" id="title"></h2>
+                    <div class="text-muted mb-3" id="subtitle"></div>
+                    <h6 class="fw-bold">Description</h6>
+                    <p class="preline" id="description"></p>
+                    <h6 class="fw-bold">Skills required</h6>
+                    <div id="skills"></div>
+                </div></div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0"><div class="card-body">
+                    <ul class="list-unstyled mb-3">
+                        <li class="mb-2"><span class="text-muted">Salary</span><div class="fw-semibold" id="salary"></div></li>
+                        <li class="mb-2"><span class="text-muted">Minimum CGPA</span><div class="fw-semibold" id="minCgpa"></div></li>
+                        <li class="mb-2"><span class="text-muted">Apply by</span><div class="fw-semibold" id="deadline"></div></li>
+                        <li><span class="text-muted">Drive date</span><div class="fw-semibold" id="driveDate"></div></li>
+                    </ul>
+                    <div id="eligibility"></div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" id="applyBtn" type="button">Apply now</button>
+                        <button class="btn btn-outline-warning" id="saveBtn" type="button">&#9734; Save to wishlist</button>
+                    </div>
+                </div></div>
+            </div>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragments/layout :: footer}"></div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script th:src="@{/js/job-details.js}"></script>
+</body>
+</html>

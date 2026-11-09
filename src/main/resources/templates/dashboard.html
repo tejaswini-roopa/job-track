@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
+<body data-require="STUDENT">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<main class="container py-4">
+    <h2 class="fw-bold mb-0" id="welcome">Dashboard</h2>
+    <p class="text-muted">Your placement progress at a glance.</p>
+    <div id="alertBox"></div>
+    <div class="row" id="loading"><div class="col-12 text-center py-5"><div class="spinner-border text-primary" role="status"></div></div></div>
+
+    <div id="content" class="d-none">
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Total applications</div><div class="value" id="statTotal">0</div></div></div></div>
+            <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card s-review"><div class="card-body"><div class="text-muted small">Under review</div><div class="value" id="statReview">0</div></div></div></div>
+            <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card s-oa"><div class="card-body"><div class="text-muted small">Online assessment</div><div class="value" id="statOA">0</div></div></div></div>
+            <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card s-interview"><div class="card-body"><div class="text-muted small">Interviews</div><div class="value" id="statInterview">0</div></div></div></div>
+            <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card s-selected"><div class="card-body"><div class="text-muted small">Selected</div><div class="value" id="statSelected">0</div></div></div></div>
+            <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card s-rejected"><div class="card-body"><div class="text-muted small">Rejected</div><div class="value" id="statRejected">0</div></div></div></div>
+        </div>
+
+        <div class="row g-3 mb-4" id="chartsRow">
+            <div class="col-lg-5"><div class="card shadow-sm border-0 h-100"><div class="card-body">
+                <h6 class="fw-bold">Applications by status</h6>
+                <div class="chart-box"><canvas id="statusChart"></canvas></div></div></div></div>
+            <div class="col-lg-7"><div class="card shadow-sm border-0 h-100"><div class="card-body">
+                <h6 class="fw-bold">Applications per month</h6>
+                <div class="chart-box"><canvas id="trendChart"></canvas></div></div></div></div>
+        </div>
+        <div class="alert alert-info d-none" id="noApps">You have not applied to any jobs yet. <a href="/jobs" class="alert-link">Browse jobs</a> to get started.</div>
+
+        <div class="card shadow-sm border-0"><div class="card-body">
+            <h6 class="fw-bold">Upcoming interviews</h6>
+            <div id="interviews"></div>
+        </div></div>
+    </div>
+</main>
+<div th:replace="~{fragments/layout :: footer}"></div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.js"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+</body>
+</html>

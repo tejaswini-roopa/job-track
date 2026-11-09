@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Welcome')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<main>
+    <section class="hero">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold">Track every application.<br>Land the offer.</h1>
+            <p class="lead col-lg-7 mx-auto my-4">JobTrack gives students one place to discover jobs, follow each application through the hiring pipeline and see how their placement journey is going.</p>
+            <div id="ctaBox" class="d-flex gap-2 justify-content-center">
+                <a class="btn btn-primary btn-lg" th:href="@{/register}">Get started</a>
+                <a class="btn btn-outline-light btn-lg" th:href="@{/login}">Log in</a>
+            </div>
+        </div>
+    </section>
+    <section class="container py-5">
+        <h2 class="text-center fw-bold mb-4">Everything you need for placement season</h2>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4"><div class="card feature-card h-100"><div class="card-body">
+                <div class="feature-icon">&#128269;</div><h5 class="mt-2">Smart job search</h5>
+                <p class="text-muted mb-0">Search by company, role, location and skills, and filter to jobs you are eligible for.</p></div></div></div>
+            <div class="col-md-6 col-lg-4"><div class="card feature-card h-100"><div class="card-body">
+                <div class="feature-icon">&#128202;</div><h5 class="mt-2">Live dashboard</h5>
+                <p class="text-muted mb-0">Charts of your applications, selections and upcoming interviews at a glance.</p></div></div></div>
+            <div class="col-md-6 col-lg-4"><div class="card feature-card h-100"><div class="card-body">
+                <div class="feature-icon">&#128204;</div><h5 class="mt-2">Application tracker</h5>
+                <p class="text-muted mb-0">Follow each application from Applied to Selected and keep private notes.</p></div></div></div>
+            <div class="col-md-6 col-lg-4"><div class="card feature-card h-100"><div class="card-body">
+                <div class="feature-icon">&#11088;</div><h5 class="mt-2">Wishlist</h5>
+                <p class="text-muted mb-0">Save interesting jobs now and apply when you are ready.</p></div></div></div>
+            <div class="col-md-6 col-lg-4"><div class="card feature-card h-100"><div class="card-body">
+                <div class="feature-icon">&#128339;</div><h5 class="mt-2">Full history</h5>
+                <p class="text-muted mb-0">Every status change is recorded, so you always know what happened and when.</p></div></div></div>
+            <div class="col-md-6 col-lg-4"><div class="card feature-card h-100"><div class="card-body">
+                <div class="feature-icon">&#128274;</div><h5 class="mt-2">Secure by design</h5>
+                <p class="text-muted mb-0">BCrypt password hashing, JWT authentication and role-based access.</p></div></div></div>
+        </div>
+    </section>
+</main>
+<div th:replace="~{fragments/layout :: footer}"></div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script th:src="@{/js/home.js}"></script>
+</body>
+</html>

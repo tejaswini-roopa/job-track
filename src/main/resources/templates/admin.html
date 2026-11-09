@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin')}"></head>
+<body data-require="ADMIN">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<main class="container py-4">
+    <h2 class="fw-bold">Admin dashboard</h2>
+    <ul class="nav nav-tabs mb-3 flex-nowrap overflow-auto" id="adminTabs" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-key="overview" data-bs-toggle="tab" data-bs-target="#pane-overview" type="button">Overview</button></li>
+        <li class="nav-item"><button class="nav-link" data-key="jobs" data-bs-toggle="tab" data-bs-target="#pane-jobs" type="button">Jobs</button></li>
+        <li class="nav-item"><button class="nav-link" data-key="companies" data-bs-toggle="tab" data-bs-target="#pane-companies" type="button">Companies</button></li>
+        <li class="nav-item"><button class="nav-link" data-key="applications" data-bs-toggle="tab" data-bs-target="#pane-applications" type="button">Applications</button></li>
+        <li class="nav-item"><button class="nav-link" data-key="students" data-bs-toggle="tab" data-bs-target="#pane-students" type="button">Students</button></li>
+    </ul>
+    <div id="alertBox"></div>
+
+    <div class="tab-content">
+        <!-- OVERVIEW -->
+        <div class="tab-pane fade show active" id="pane-overview">
+            <div class="d-flex justify-content-end mb-2"><button class="btn btn-sm btn-outline-secondary" id="refreshOverview" type="button">Refresh</button></div>
+            <div class="row g-3 mb-3">
+                <div class="col-6 col-lg-3"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Applications</div><div class="value" id="aTotal">-</div></div></div></div>
+                <div class="col-6 col-lg-3"><div class="card stat-card s-review"><div class="card-body"><div class="text-muted small">Students</div><div class="value" id="aStudents">-</div></div></div></div>
+                <div class="col-6 col-lg-3"><div class="card stat-card s-interview"><div class="card-body"><div class="text-muted small">Open jobs</div><div class="value" id="aJobs">-</div></div></div></div>
+                <div class="col-6 col-lg-3"><div class="card stat-card s-selected"><div class="card-body"><div class="text-muted small">Success rate</div><div class="value" id="aRate">-</div></div></div></div>
+            </div>
+            <div class="row g-3">
+                <div class="col-lg-4"><div class="card shadow-sm border-0 h-100"><div class="card-body">
+                    <h6 class="fw-bold">Selection vs rejection</h6>
+                    <div class="chart-box"><canvas id="ratioChart"></canvas></div>
+                    <div class="small text-muted text-center mt-2" id="ratioText"></div></div></div></div>
+                <div class="col-lg-8"><div class="card shadow-sm border-0 h-100"><div class="card-body">
+                    <h6 class="fw-bold">Monthly applications</h6>
+                    <div class="chart-box"><canvas id="monthChart"></canvas></div></div></div></div>
+                <div class="col-lg-6"><div class="card shadow-sm border-0 h-100"><div class="card-body">
+                    <h6 class="fw-bold">Applications by company</h6>
+                    <div class="chart-box"><canvas id="companyChart"></canvas></div></div></div></div>
+                <div class="col-lg-6"><div class="card shadow-sm border-0 h-100"><div class="card-body">
+                    <h6 class="fw-bold">Applications by status</h6>
+                    <div class="chart-box"><canvas id="statusChart"></canvas></div></div></div></div>
+            </div>
+        </div>
+
+        <!-- JOBS -->
+        <div class="tab-pane fade" id="pane-jobs">
+            <div class="d-flex flex-wrap gap-2 justify-content-between mb-3">
+                <form id="jobFilter" class="d-flex flex-wrap gap-2">
+                    <input class="form-control w-auto" name="role" placeholder="Role">
+                    <input class="form-control w-auto" name="company" placeholder="Company">
+                    <input class="form-control w-auto" name="location" placeholder="Location">
+                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                </form>
+                <button class="btn btn-primary" id="addJobBtn" type="button">+ Add job</button>
+            </div>
+            <div class="card shadow-sm border-0"><div class="table-responsive"><table class="table align-middle mb-0">
+                <thead class="table-light"><tr><th>Title</th><th>Company</th><th>Type</th><th>Deadline</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+                <tbody id="jobsBody"></tbody></table></div></div>
+            <div class="mt-3" id="jobsPager"></div>
+        </div>
+
+        <!-- COMPANIES -->
+        <div class="tab-pane fade" id="pane-companies">
+            <div class="d-flex flex-wrap gap-2 justify-content-between mb-3">
+                <form id="companyFilter" class="d-flex gap-2">
+                    <input class="form-control" name="q" placeholder="Search companies">
+                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                </form>
+                <button class="btn btn-primary" id="addCompanyBtn" type="button">+ Add company</button>
+            </div>
+            <div class="card shadow-sm border-0"><div class="table-responsive"><table class="table align-middle mb-0">
+                <thead class="table-light"><tr><th>Name</th><th>Industry</th><th>Location</th><th>Website</th><th class="text-end">Actions</th></tr></thead>
+                <tbody id="companiesBody"></tbody></table></div></div>
+            <div class="mt-3" id="companiesPager"></div>
+        </div>
+
+        <!-- APPLICATIONS -->
+        <div class="tab-pane fade" id="pane-applications">
+            <div class="mb-3">
+                <select class="form-select w-auto" id="appStatusFilter" aria-label="Filter by status">
+                    <option value="">All statuses</option>
+                    <option value="APPLIED">Applied</option><option value="UNDER_REVIEW">Under review</option>
+                    <option value="ONLINE_ASSESSMENT">Online assessment</option><option value="INTERVIEW">Interview</option>
+                    <option value="SELECTED">Selected</option><option value="REJECTED">Rejected</option>
+                </select>
+            </div>
+            <div class="card shadow-sm border-0"><div class="table-responsive"><table class="table align-middle mb-0">
+                <thead class="table-light"><tr><th>Student</th><th>Job</th><th>Status</th><th>Applied</th><th class="text-end">Actions</th></tr></thead>
+                <tbody id="appsBody"></tbody></table></div></div>
+            <div class="mt-3" id="appsPager"></div>
+        </div>
+
+        <!-- STUDENTS -->
+        <div class="tab-pane fade" id="pane-students">
+            <div class="card shadow-sm border-0"><div class="table-responsive"><table class="table align-middle mb-0">
+                <thead class="table-light"><tr><th>Name</th><th>Email</th><th>Joined</th><th>Account</th><th class="text-end">Actions</th></tr></thead>
+                <tbody id="studentsBody"></tbody></table></div></div>
+            <div class="mt-3" id="studentsPager"></div>
+        </div>
+    </div>
+</main>
+
+<!-- JOB MODAL -->
+<div class="modal fade" id="jobModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-lg"><form class="modal-content" id="jobForm" novalidate>
+    <div class="modal-header"><h5 class="modal-title" id="jobModalTitle">Add job</h5><button class="btn-close" data-bs-dismiss="modal" type="button"></button></div>
+    <div class="modal-body"><div id="jobAlert"></div><div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Company</label><select class="form-select" name="companyId" required></select></div>
+        <div class="col-md-6"><label class="form-label">Title</label><input class="form-control" name="title" maxlength="150" required>
+            <div class="invalid-feedback">Title is required.</div></div>
+        <div class="col-12"><label class="form-label">Description</label><textarea class="form-control" name="description" rows="4" required></textarea>
+            <div class="invalid-feedback">Description is required.</div></div>
+        <div class="col-md-4"><label class="form-label">Location</label><input class="form-control" name="location" maxlength="100"></div>
+        <div class="col-md-4"><label class="form-label">Job type</label><select class="form-select" name="jobType">
+            <option value="FULL_TIME">Full time</option><option value="PART_TIME">Part time</option>
+            <option value="INTERNSHIP">Internship</option><option value="CONTRACT">Contract</option></select></div>
+        <div class="col-md-4"><label class="form-label">Status</label><select class="form-select" name="status">
+            <option value="OPEN">Open</option><option value="CLOSED">Closed</option></select></div>
+        <div class="col-12"><label class="form-label">Skills required (comma separated)</label><input class="form-control" name="skillsRequired" maxlength="500"></div>
+        <div class="col-md-3"><label class="form-label">Min CGPA</label><input class="form-control" type="number" name="minCgpa" min="0" max="10" step="0.01" value="0"></div>
+        <div class="col-md-3"><label class="form-label">Salary (LPA)</label><input class="form-control" type="number" name="salaryLpa" min="0" step="0.01"></div>
+        <div class="col-md-3"><label class="form-label">Apply by</label><input class="form-control" type="date" name="applicationDeadline"></div>
+        <div class="col-md-3"><label class="form-label">Drive date</label><input class="form-control" type="date" name="driveDate"></div>
+    </div></div>
+    <div class="modal-footer"><button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+        <button class="btn btn-primary" type="submit" id="jobSubmit">Save job</button></div>
+</form></div></div>
+
+<!-- COMPANY MODAL -->
+<div class="modal fade" id="companyModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog"><form class="modal-content" id="companyForm" novalidate>
+    <div class="modal-header"><h5 class="modal-title" id="companyModalTitle">Add company</h5><button class="btn-close" data-bs-dismiss="modal" type="button"></button></div>
+    <div class="modal-body"><div id="companyAlert"></div><div class="row g-3">
+        <div class="col-12"><label class="form-label">Name</label><input class="form-control" name="name" maxlength="120" required>
+            <div class="invalid-feedback">Name is required.</div></div>
+        <div class="col-md-6"><label class="form-label">Industry</label><input class="form-control" name="industry" maxlength="80"></div>
+        <div class="col-md-6"><label class="form-label">Location</label><input class="form-control" name="location" maxlength="100"></div>
+        <div class="col-12"><label class="form-label">Website</label><input class="form-control" name="website" maxlength="200" placeholder="https://..."></div>
+    </div></div>
+    <div class="modal-footer"><button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+        <button class="btn btn-primary" type="submit" id="companySubmit">Save company</button></div>
+</form></div></div>
+
+<!-- STATUS MODAL -->
+<div class="modal fade" id="statusModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog"><form class="modal-content" id="statusForm" novalidate>
+    <div class="modal-header"><h5 class="modal-title">Update status</h5><button class="btn-close" data-bs-dismiss="modal" type="button"></button></div>
+    <div class="modal-body"><div id="statusAlert"></div>
+        <p class="small text-muted" id="statusFor"></p>
+        <div class="mb-3"><label class="form-label">New status</label><select class="form-select" name="status" required></select></div>
+        <div><label class="form-label">Remarks (optional)</label><input class="form-control" name="remarks" maxlength="255"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+        <button class="btn btn-primary" type="submit" id="statusSubmit">Update</button></div>
+</form></div></div>
+
+<!-- INTERVIEW MODAL -->
+<div class="modal fade" id="interviewModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog"><form class="modal-content" id="interviewForm" novalidate>
+    <div class="modal-header"><h5 class="modal-title">Schedule interview</h5><button class="btn-close" data-bs-dismiss="modal" type="button"></button></div>
+    <div class="modal-body"><div id="interviewAlert"></div>
+        <p class="small text-muted" id="interviewFor"></p>
+        <div class="row g-3">
+            <div class="col-12"><label class="form-label">Round name</label><input class="form-control" name="roundName" maxlength="80" placeholder="Technical Round 1" required>
+                <div class="invalid-feedback">Round name is required.</div></div>
+            <div class="col-md-7"><label class="form-label">Date and time</label><input class="form-control" type="datetime-local" name="scheduledAt" required>
+                <div class="invalid-feedback">Choose a future date and time.</div></div>
+            <div class="col-md-5"><label class="form-label">Mode</label><select class="form-select" name="mode">
+                <option value="ONLINE">Online</option><option value="OFFLINE">Offline</option></select></div>
+            <div class="col-12"><label class="form-label">Location or meeting link</label><input class="form-control" name="locationOrLink" maxlength="255"></div>
+        </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+        <button class="btn btn-primary" type="submit" id="interviewSubmit">Schedule</button></div>
+</form></div></div>
+
+<!-- HISTORY MODAL -->
+<div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">Status history</h5><button class="btn-close" data-bs-dismiss="modal" type="button"></button></div>
+    <div class="modal-body" id="historyBody"></div>
+</div></div></div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.js"></script>
+<script th:src="@{/js/admin.js}"></script>
+</body>
+</html>

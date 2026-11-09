@@ -1,0 +1,19 @@
+# Optional: runs MySQL 8 with the schema and sample data pre-loaded.
+#   1. Put DB_PASSWORD=<something> in a local .env file (it is git-ignored)
+#   2. docker compose up -d
+# The app itself still runs from IntelliJ or `mvn spring-boot:run`.
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: jobtrack-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in your shell or in a .env file}
+    ports:
+      - "3306:3306"
+    volumes:
+      - jobtrack-data:/var/lib/mysql
+      - ./src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./src/main/resources/db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+
+volumes:
+  jobtrack-data:
